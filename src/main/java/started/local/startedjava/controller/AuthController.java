@@ -21,5 +21,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/success")
+    public String getMessage() {
+        return "Hello success";
+    }
+
 }
 

@@ -1,19 +1,34 @@
 package started.local.startedjava.entity;
-//
-//import jakarta.persistence.GeneratedValue;
-//import jakarta.persistence.GenerationType;
-//import jakarta.persistence.Id;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Document("users")
 public class User {
     @Id
     String id;
+
+    @NotBlank
+    @Size(max = 20)
     String username;
+
+    @NotBlank
+    @Size(max = 50)
+    @Email
     String email;
+
+    @NotBlank
+    @Size(max = 120)
     String password;
+
+    Set<String> roles = new HashSet<>();
 }

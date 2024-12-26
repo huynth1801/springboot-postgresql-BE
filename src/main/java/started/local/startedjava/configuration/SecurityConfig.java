@@ -22,7 +22,7 @@ import java.util.Arrays;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**", "/register", "/swagger-ui/**", "/v3/api-docs/**"
+            "/api/auth/**", "/register", "/swagger-ui/**", "/v3/api-docs/**", "/log-in"
     };
 
     @Bean
@@ -45,10 +45,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/api/auth/login")
-                        .permitAll()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))

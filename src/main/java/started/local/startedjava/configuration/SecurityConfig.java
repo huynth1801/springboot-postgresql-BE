@@ -22,7 +22,7 @@ import java.util.Arrays;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**", "/register", "/swagger-ui/**", "/v3/api-docs/**", "/log-in"
+            "/api/auth/**", "/register", "/users/**", "/log-in"
     };
 
     @Bean

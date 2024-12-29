@@ -36,10 +36,5 @@ public class AuthController {
                         .build()).build();
     }
 
-    @GetMapping("/success")
-    public String getMessage() {
-        return "Hello success";
-    }
-
 }
 

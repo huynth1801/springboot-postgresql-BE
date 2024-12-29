@@ -2,19 +2,19 @@ package started.local.startedjava.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import started.local.startedjava.dto.request.AuthenticationRequest;
 import started.local.startedjava.dto.request.UserCreationRequest;
 import started.local.startedjava.dto.response.UserResponse;
 import started.local.startedjava.entity.ERole;
-import started.local.startedjava.entity.Role;
 import started.local.startedjava.entity.User;
 import started.local.startedjava.exception.AppException;
 import started.local.startedjava.exception.ErrorCode;
+import started.local.startedjava.mapper.UserMapper;
 import started.local.startedjava.repository.UserRepository;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -22,6 +22,7 @@ import java.util.Set;
 public class AuthService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     // Đăng ký người dùng
     public UserResponse registerUser(UserCreationRequest request) {
@@ -49,6 +50,24 @@ public class AuthService {
                 .email(user.getEmail())
                 .roles(user.getRoles())
                 .build();
+    }
+
+    // Get all users
+    public List<UserResponse> getUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        user.getRoles()
+                ))
+                .toList();
+    }
+
+    public UserResponse getUser(String id) {
+        return userMapper.toUserResponse(userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     // Authenticate

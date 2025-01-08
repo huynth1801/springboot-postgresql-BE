@@ -29,11 +29,10 @@ public class AuthController {
     // Login
     @PostMapping("/log-in")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-        boolean result = authService.authenticate(request);
+        var result = authService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()
-                .result(AuthenticationResponse.builder()
-                        .authenticated(result)
-                        .build()).build();
+                .result(result)
+                .build();
     }
 
 }

@@ -27,7 +27,7 @@ import java.util.Arrays;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**", "/register", "/users/*", "/log-in"
+            "/api/auth/**", "/register", "/log-in"
     };
 
     @Value("${jwt.signer.key}")

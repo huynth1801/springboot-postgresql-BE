@@ -2,16 +2,21 @@ package started.local.startedjava.service;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import started.local.startedjava.dto.request.AuthenticationRequest;
+import started.local.startedjava.dto.request.IntrospectRequest;
 import started.local.startedjava.dto.request.UserCreationRequest;
 import started.local.startedjava.dto.response.AuthenticationResponse;
+import started.local.startedjava.dto.response.IntrospectResponse;
 import started.local.startedjava.dto.response.UserResponse;
 import started.local.startedjava.entity.ERole;
 import started.local.startedjava.entity.User;
@@ -21,6 +26,7 @@ import started.local.startedjava.mapper.UserMapper;
 import started.local.startedjava.repository.UserRepository;
 
 import javax.swing.*;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -36,8 +42,8 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    @NonFinal
-    private static final String SIGNER_KEY = "k5LhwKSAgoGoEIRf1eZ3qKyFMsUbElFfGaStf4ExC0JWnYuxCOdja8PnztJdqlUU";
+    @Value("${jwt.signer.key}")
+    private String signerKey;
 
     // Đăng ký người dùng
     public UserResponse registerUser(UserCreationRequest request) {
@@ -85,6 +91,23 @@ public class AuthService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
+    public IntrospectResponse introspect(IntrospectRequest request)
+        throws JOSEException, ParseException {
+        var token = request.getToken();
+
+        JWSVerifier verifier  = new MACVerifier(signerKey.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        return IntrospectResponse.builder()
+                .valid(verified && expiryTime.after(new Date()))
+                .build();
+    }
+
     // Authenticate
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
@@ -123,7 +146,7 @@ public class AuthService {
         JWSObject jwsObject = new JWSObject(header, payload);
 
         try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            jwsObject.sign(new MACSigner(signerKey.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
             throw new RuntimeException(e);

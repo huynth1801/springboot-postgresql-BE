@@ -26,7 +26,7 @@ public class ApplicationInitConfig {
     ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
-                var roles = Collections.singleton(ERole.ROLE_ADMIN.name());
+                var roles = Collections.singleton(ERole.ADMIN.name());
 
                 User user = new User();
                 user.setUsername("admin");

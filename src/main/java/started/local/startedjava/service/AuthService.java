@@ -59,32 +59,24 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         Set<String> roles = new HashSet<>();
-        roles.add(ERole.USER.name());
+//        roles.add(ERole.USER.name());
 
-        user.setRoles(roles);
+//        user.setRoles(roles);
 
         userRepository.save(user);
         return UserResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .roles(user.getRoles())
+//                .roles(user.getRoles())
                 .build();
     }
 
     // Get all users
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<UserResponse> getUsers() {
-        log.info("Check");
-        return userRepository.findAll()
-                .stream()
-                .map(user -> new UserResponse(
-                        user.getId(),
-                        user.getUsername(),
-                        user.getEmail(),
-                        user.getRoles()
-                ))
-                .toList();
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserResponse).toList();
     }
 
     @PostAuthorize("returnObject.username == authentication.name")
@@ -168,9 +160,9 @@ public class AuthService {
 
     private String buildScope(User user){
         StringJoiner stringJoiner = new StringJoiner(" ");
-        if(!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(stringJoiner::add);
-        }
+//        if(!CollectionUtils.isEmpty(user.getRoles())) {
+//            user.getRoles().forEach(stringJoiner::add);
+//        }
         return stringJoiner.toString();
     }
 }

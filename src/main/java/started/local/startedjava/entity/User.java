@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Size;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -30,5 +32,6 @@ public class User {
     @Size(max = 120)
     String password;
 
-    Set<String> roles = new HashSet<>();
+    @DBRef
+    List<String> roles; // Người dùng có thể có nhiều vai trò
 }

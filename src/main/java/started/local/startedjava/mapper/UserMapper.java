@@ -1,7 +1,6 @@
 package started.local.startedjava.mapper;
 
 
-import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 import started.local.startedjava.dto.request.UserCreationRequest;
 import started.local.startedjava.dto.response.UserResponse;
@@ -28,7 +27,7 @@ public class UserMapper {
         response.setId(user.getId());
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
-        response.setRoles(user.getRoles());
+//        response.setRoles(user.getRoles());
         return response;
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import started.local.startedjava.dto.request.AuthenticationRequest;
 import started.local.startedjava.dto.request.IntrospectRequest;
 import started.local.startedjava.dto.request.UserCreationRequest;
+import started.local.startedjava.dto.request.UserUpdateRequest;
 import started.local.startedjava.dto.response.AuthenticationResponse;
 import started.local.startedjava.dto.response.IntrospectResponse;
 import started.local.startedjava.dto.response.UserResponse;
@@ -24,6 +25,7 @@ import started.local.startedjava.entity.User;
 import started.local.startedjava.exception.AppException;
 import started.local.startedjava.exception.ErrorCode;
 import started.local.startedjava.mapper.UserMapper;
+import started.local.startedjava.repository.RoleRepository;
 import started.local.startedjava.repository.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -40,6 +42,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final RoleRepository roleRepository;
 
     @Value("${jwt.signer.key}")
     private String signerKey;
@@ -85,6 +88,20 @@ public class AuthService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles =  roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -93,6 +110,10 @@ public class AuthService {
                 () -> new AppException(ErrorCode.USER_NOT_EXISTED)
         );
         return userMapper.toUserResponse(user);
+    }
+
+    public void deleteUser(String userId) {
+        userRepository.deleteById(userId);
     }
 
     public IntrospectResponse introspect(IntrospectRequest request)

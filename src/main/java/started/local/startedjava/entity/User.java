@@ -33,5 +33,5 @@ public class User {
     String password;
 
     @DBRef
-    List<String> roles; // Người dùng có thể có nhiều vai trò
+    Set<Role> roles; // Người dùng có thể có nhiều vai trò
 }

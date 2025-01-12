@@ -29,6 +29,7 @@ public class RoleMapper {
 
         Role role = new Role();
         role.setName(ERole.valueOf(request.getName()));
+        role.setDescription(request.getDescription());
 
         // Map permissions from request to Set<Permission>
         if (request.getPermissions() != null) {

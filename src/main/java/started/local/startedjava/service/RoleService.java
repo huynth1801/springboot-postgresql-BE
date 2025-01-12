@@ -30,7 +30,7 @@ public class RoleService {
 
         var permissions = permissionRepository.findByName(request.getPermissions().toString());
         log.info("service permisison {}", permissions);
-//        role.setPermissions((Collections.singleton(permissions)));
+        role.setPermissions((Collections.singleton(permissions)));
         role = roleRepository.save(role);
         log.info("Role created: {}", role);
         return roleMapper.toRoleResponse(role);

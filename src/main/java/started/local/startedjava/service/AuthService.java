@@ -4,6 +4,7 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import started.local.startedjava.dto.request.AuthenticationRequest;
-import started.local.startedjava.dto.request.IntrospectRequest;
-import started.local.startedjava.dto.request.UserCreationRequest;
-import started.local.startedjava.dto.request.UserUpdateRequest;
+import started.local.startedjava.dto.request.*;
 import started.local.startedjava.dto.response.AuthenticationResponse;
 import started.local.startedjava.dto.response.IntrospectResponse;
 import started.local.startedjava.dto.response.UserResponse;
@@ -101,6 +99,12 @@ public class AuthService {
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
+
+    // Refresh token
+//    public AuthenticationResponse refreshToken(RefreshRequest request)
+//    throws ParseException, JOSEException {
+//        var signedJWT = JWTParser.parse(request.getToken());
+//    }
 
 
     public UserResponse getMyInfo() {
@@ -195,5 +199,16 @@ public class AuthService {
             });
         }
         return stringJoiner.toString();
+    }
+
+    public boolean validateTokenSignature(SignedJWT signedJWT) throws JOSEException {
+        JWSVerifier verifier = new MACVerifier(signerKey);
+        return signedJWT.verify(verifier);
+    }
+
+    // Check token isExpired
+    public boolean isTokenExpired(JWTClaimsSet claimsSet) {
+        Date expiration = claimsSet.getExpirationTime();
+        return expiration != null && expiration.after(new Date());
     }
 }

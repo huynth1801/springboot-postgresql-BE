@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 public class Permission {
     @Id
+    String id;
     String name;
     String description;
 }

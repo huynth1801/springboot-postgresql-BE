@@ -12,6 +12,7 @@ import started.local.startedjava.mapper.RoleMapper;
 import started.local.startedjava.repository.PermissionRepository;
 import started.local.startedjava.repository.RoleRepository;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -27,9 +28,11 @@ public class RoleService {
     public RoleResponse create(RoleRequest request) {
         var role = roleMapper.toRole(request);
 
-        var permissions = permissionRepository.findAllById(request.getPermissions());
-        role.setPermissions(new HashSet<>(permissions));
+        var permissions = permissionRepository.findByName(request.getPermissions().toString());
+        log.info("service permisison {}", permissions);
+//        role.setPermissions((Collections.singleton(permissions)));
         role = roleRepository.save(role);
+        log.info("Role created: {}", role);
         return roleMapper.toRoleResponse(role);
     }
 

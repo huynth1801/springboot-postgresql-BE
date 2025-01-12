@@ -21,6 +21,7 @@ import started.local.startedjava.dto.response.AuthenticationResponse;
 import started.local.startedjava.dto.response.IntrospectResponse;
 import started.local.startedjava.dto.response.UserResponse;
 import started.local.startedjava.entity.ERole;
+import started.local.startedjava.entity.Role;
 import started.local.startedjava.entity.User;
 import started.local.startedjava.exception.AppException;
 import started.local.startedjava.exception.ErrorCode;
@@ -62,7 +63,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         Set<String> roles = new HashSet<>();
-//        roles.add(ERole.USER.name());
+        roles.add(ERole.USER.name());
 
 //        user.setRoles(roles);
 
@@ -181,9 +182,18 @@ public class AuthService {
 
     private String buildScope(User user){
         StringJoiner stringJoiner = new StringJoiner(" ");
-//        if(!CollectionUtils.isEmpty(user.getRoles())) {
-//            user.getRoles().forEach(stringJoiner::add);
-//        }
+        if(!CollectionUtils.isEmpty(user.getRoles())) {
+            log.info(user.getRoles().toString());
+            user.getRoles().forEach(role -> {
+                log.info("get role names {}", role.getName());
+                stringJoiner.add(role.getName());
+                log.info("roles permission {}", role.getPermissions());
+                if(!CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions().forEach(permission -> {stringJoiner.add(permission.getName());});
+
+                }
+            });
+        }
         return stringJoiner.toString();
     }
 }

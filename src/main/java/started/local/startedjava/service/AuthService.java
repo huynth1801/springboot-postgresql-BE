@@ -24,6 +24,7 @@ import started.local.startedjava.entity.User;
 import started.local.startedjava.exception.AppException;
 import started.local.startedjava.exception.ErrorCode;
 import started.local.startedjava.mapper.UserMapper;
+import started.local.startedjava.repository.InvalidatedTokenRepository;
 import started.local.startedjava.repository.RoleRepository;
 import started.local.startedjava.repository.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +43,7 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @Value("${jwt.signer.key}")
     private String signerKey;
@@ -169,6 +171,7 @@ public class AuthService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
 
@@ -182,6 +185,25 @@ public class AuthService {
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+        JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        if (!(verified && expiryTime.after(new Date())))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if (invalidatedTokenRepository
+                .existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        return signedJWT;
     }
 
     private String buildScope(User user){

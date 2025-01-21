@@ -1,4 +1,5 @@
 package started.local.startedjava.configuration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,9 @@ public class SecurityConfig {
             "/api/auth/**", "/register", "/log-in"
     };
 
+    @Autowired
+    CustomCorsConfiguration config;
+
     @Value("${jwt.signer.key}")
     private String signerKey;
 
@@ -49,7 +53,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(c -> c.configurationSource(config))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()

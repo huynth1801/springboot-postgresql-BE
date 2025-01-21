@@ -1,15 +1,16 @@
 package started.local.startedjava.controller;
 
+import com.nimbusds.jose.JOSEException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import started.local.startedjava.dto.request.ApiResponse;
-import started.local.startedjava.dto.request.AuthenticationRequest;
-import started.local.startedjava.dto.request.UserCreationRequest;
+import started.local.startedjava.dto.request.*;
 import started.local.startedjava.dto.response.AuthenticationResponse;
 import started.local.startedjava.dto.response.UserResponse;
 import started.local.startedjava.service.AuthService;
+
+import java.text.ParseException;
 
 
 @RestController
@@ -35,5 +36,10 @@ public class AuthController {
                 .build();
     }
 
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        authService.logout(request);
+        return ApiResponse.<Void>builder().build();
+    }
 }
 

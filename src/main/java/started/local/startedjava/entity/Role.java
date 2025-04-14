@@ -1,13 +1,12 @@
 package started.local.startedjava.entity;
 
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Set;
 
@@ -15,13 +14,18 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level =AccessLevel.PRIVATE)
-@Document("roles")
+@Table(name = "roles")
 public class Role {
     @Id
     String id;
     ERole name;
     String description;
 
-    @DBRef
-    Set<Permission> permissions; // Mỗi vai trò có nhiều quyền
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    Set<Permission> permissions;
 }

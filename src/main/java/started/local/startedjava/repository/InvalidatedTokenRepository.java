@@ -1,7 +1,7 @@
 package started.local.startedjava.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import started.local.startedjava.entity.InvalidatedToken;
 
-public interface InvalidatedTokenRepository extends MongoRepository<InvalidatedToken, String> {
+public interface InvalidatedTokenRepository extends JpaRepository<InvalidatedToken, String> {
 }

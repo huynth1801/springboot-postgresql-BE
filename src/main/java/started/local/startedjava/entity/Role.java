@@ -1,31 +1,34 @@
 package started.local.startedjava.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.Id;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level =AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
 @Table(name = "roles")
+@Slf4j
 public class Role {
     @Id
+    @GeneratedValue
+    @UuidGenerator
     String id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, unique = true)
     ERole name;
+
+    @Column(length = 500)
     String description;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "role_permissions",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
     Set<Permission> permissions;
 }

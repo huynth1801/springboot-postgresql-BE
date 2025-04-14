@@ -1,5 +1,6 @@
 package started.local.startedjava.configuration;
 
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,7 +15,6 @@ import started.local.startedjava.entity.User;
 import started.local.startedjava.repository.RoleRepository;
 import started.local.startedjava.repository.UserRepository;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,29 +27,39 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
     @Bean
-    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
-        return args -> {
-            // Ensure the ADMIN role exists in the database
-            Optional<Role> adminRoleOptional = roleRepository.findByName(ERole.valueOf(ERole.ADMIN.name()));
-            Role adminRole = adminRoleOptional.orElseGet(() -> {
-                Role newRole = new Role();
-                log.info(String.valueOf(ERole.valueOf(ERole.ADMIN.name())));
-                newRole.setName(ERole.valueOf(ERole.ADMIN.name()));
-                return roleRepository.save(newRole);
-            });
+    public ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
+        return args -> runApplication(args.getSourceArgs(), userRepository, roleRepository);
+    }
 
-            log.info("Admin role: {}", adminRole);
-            log.info("Role name {}", adminRole.getName());
+    @Transactional
+    public void runApplication(String[] args, UserRepository userRepository, RoleRepository roleRepository) {
+        // Ensure the ADMIN role exists in the database
+        Optional<Role> adminRoleOptional = roleRepository.findByName(ERole.ADMIN);
+        Role adminRole;
 
-            // Check if the admin user already exists
-            if (userRepository.findByUsername("admin").isEmpty()) {
-                User user = new User();
-                user.setUsername("admin");
-                user.setPassword(passwordEncoder.encode("admin"));
-                user.setRoles(Set.of(adminRole)); // Set the ADMIN role
-                userRepository.save(user);
-                log.warn("Admin user has been created with default password: admin. Please change it.");
-            }
-        };
+        if (adminRoleOptional.isPresent()) {
+            adminRole = adminRoleOptional.get();
+        } else {
+            adminRole = new Role();
+            log.info("Creating new role: {}", ERole.ADMIN);
+            adminRole.setName(ERole.ADMIN);
+            roleRepository.save(adminRole);
+        }
+
+        log.info("Admin role: {}", adminRole);
+        log.info("Role name: {}", adminRole.getName());
+
+        // Check if the admin user already exists
+        if (userRepository.findByUsername("admin").isEmpty()) {
+            User user = new User();
+            user.setUsername("admin");
+            user.setPassword(passwordEncoder.encode("admin"));
+            user.setEmail("admin@admin.com");
+            Set<Role> roles = Set.of(adminRole);
+            user.setRoles(roles);
+
+            userRepository.save(user);
+            log.warn("Admin user has been created with default password: admin. Please change it.");
+        }
     }
 }

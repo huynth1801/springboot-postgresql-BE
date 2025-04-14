@@ -1,9 +1,9 @@
 package started.local.startedjava.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.Date;
 
@@ -13,9 +13,15 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Document("invalidatedToken")
+@Entity
+@Table(name = "invalidated_tokens")
 public class InvalidatedToken {
+
     @Id
+    @GeneratedValue
+    @UuidGenerator
     String id;
+
+    @Temporal(TemporalType.TIMESTAMP)
     Date expiryTime;
 }

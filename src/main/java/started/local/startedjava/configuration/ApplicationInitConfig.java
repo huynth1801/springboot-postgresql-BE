@@ -33,40 +33,32 @@ public class ApplicationInitConfig {
 
     @Transactional
     public void runApplication(String[] args, UserRepository userRepository, RoleRepository roleRepository) {
-        // Ensure the ADMIN role exists in the database
-        Optional<Role> adminRoleOptional = roleRepository.findByName(ERole.ADMIN);
-        Role adminRole;
-
-        if (adminRoleOptional.isPresent()) {
-            adminRole = adminRoleOptional.get();
-        } else {
-            adminRole = new Role();
-            log.info("Creating new role: {}", ERole.ADMIN);
-            adminRole.setName(ERole.ADMIN);
-            roleRepository.save(adminRole);
+        // Tạo tất cả các role có trong enum ERole nếu chưa có
+        for (ERole role : ERole.values()) {
+            roleRepository.findByName(role).orElseGet(() -> {
+                Role newRole = new Role();
+                newRole.setName(role);
+                log.info("Creating new role: {}", role);
+                return roleRepository.save(newRole);
+            });
         }
 
-        Role userRole = roleRepository.findByName(ERole.USER)
-                .orElseGet(() -> {
-                    Role newRole = new Role();
-                    newRole.setName(ERole.USER);
-                    log.info("Creating new role: {}", ERole.USER);
-                    return roleRepository.save(newRole);
-                });
+        // Lấy lại các role đã có
+        Role adminRole = roleRepository.findByName(ERole.ADMIN).get();
+        Role userRole = roleRepository.findByName(ERole.USER).get();
 
         log.info("Admin role: {}", adminRole);
-        log.info("Role name: {}", adminRole.getName());
+        log.info("User role: {}", userRole);
 
-        // Check if the admin user already exists
+        // Tạo admin nếu chưa tồn tại
         if (userRepository.findByUsername("admin").isEmpty()) {
-            User user = new User();
-            user.setUsername("admin");
-            user.setPassword(passwordEncoder.encode("admin"));
-            user.setEmail("admin@admin.com");
-            Set<Role> roles = Set.of(adminRole);
-            user.setRoles(roles);
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setPassword(passwordEncoder.encode("admin"));
+            admin.setEmail("admin@admin.com");
+            admin.setRoles(Set.of(adminRole));
 
-            userRepository.save(user);
+            userRepository.save(admin);
             log.warn("Admin user has been created with default password: admin. Please change it.");
         }
     }

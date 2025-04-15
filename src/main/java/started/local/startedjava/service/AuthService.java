@@ -9,6 +9,7 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -58,23 +59,24 @@ public class AuthService {
             throw new RuntimeException("Username already exists");
         }
 
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        User user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Set<String> roles = new HashSet<>();
-        roles.add(ERole.USER.name());
 
-//        user.setRoles(roles);
+        HashSet<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName(ERole.valueOf(ERole.USER.name()))
+                .orElseThrow(() -> new RuntimeException("Role USER not found"));
+        roles.add(userRole);
+        user.setRoles(roles);
 
         userRepository.save(user);
-        return UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-//                .roles(user.getRoles())
-                .build();
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
+        return userMapper.toUserResponse(user);
     }
 
     // Get all users

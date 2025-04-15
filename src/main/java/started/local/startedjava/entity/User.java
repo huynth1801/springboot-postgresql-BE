@@ -33,5 +33,5 @@ public class User {
     String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    Set<Role> roles = new HashSet<>();
+    Set<Role> roles;
 }

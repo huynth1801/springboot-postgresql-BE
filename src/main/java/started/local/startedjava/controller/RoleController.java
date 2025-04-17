@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import started.local.startedjava.dto.request.ApiResponse;
 import started.local.startedjava.dto.request.PermissionRequest;
@@ -43,4 +44,10 @@ public class RoleController {
         return ApiResponse.<Void>builder().build();
     }
 
+    //Update role
+    @PutMapping("/{roleId}")
+    ApiResponse<Void> updateRole(@PathVariable String roleId, @RequestBody RoleRequest request) {
+        roleService.update(roleId, request);
+        return ApiResponse.<Void>builder().build();
+    }
 }

@@ -2,6 +2,7 @@ package started.local.startedjava.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import started.local.startedjava.dto.request.RoleRequest;
 import started.local.startedjava.dto.response.RoleResponse;
 import started.local.startedjava.entity.Role;
@@ -12,4 +13,8 @@ public interface RoleMapper {
     Role toRole(RoleRequest request);
 
     RoleResponse toRoleResponse(Role role);
+
+    @Mapping(target = "permissions", ignore = true)
+    void updateFromRequest(RoleRequest request, @MappingTarget Role role);
+
 }

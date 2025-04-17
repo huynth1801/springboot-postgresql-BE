@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import started.local.startedjava.dto.request.RoleRequest;
 import started.local.startedjava.dto.response.RoleResponse;
@@ -28,11 +29,9 @@ public class RoleService {
     public RoleResponse create(RoleRequest request) {
         var role = roleMapper.toRole(request);
 
-        var permissions = permissionRepository.findByName(request.getPermissions().toString());
-        log.info("service permisison {}", permissions);
-        role.setPermissions((Collections.singleton(permissions)));
+        var permissions = permissionRepository.findAllById(request.getPermissions());
+        role.setPermissions(new HashSet<>(permissions));
         role = roleRepository.save(role);
-        log.info("Role created: {}", role);
         return roleMapper.toRoleResponse(role);
     }
 
@@ -45,5 +44,17 @@ public class RoleService {
 
     public void delete(String role) {
         roleRepository.deleteById(role);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public void update(String roleId, RoleRequest request) {
+        log.info("Permissions from request: {}", request.getPermissions());
+        var role = roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));
+        roleMapper.updateFromRequest(request, role);
+
+        var permissions = permissionRepository.findAllById(request.getPermissions());
+        log.info("Updating permissions for role with id {}", permissions);
+        role.setPermissions(new HashSet<>(permissions));
+        roleRepository.save(role);
     }
 }

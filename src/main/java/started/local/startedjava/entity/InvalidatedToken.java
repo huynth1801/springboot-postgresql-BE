@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Getter
@@ -18,10 +19,9 @@ import java.util.Date;
 public class InvalidatedToken {
 
     @Id
-    @GeneratedValue
-    @UuidGenerator
     String id;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    Date expiryTime;
+    @Column(name = "expiry_time", nullable = false)
+    Instant expiryTime;
+
 }

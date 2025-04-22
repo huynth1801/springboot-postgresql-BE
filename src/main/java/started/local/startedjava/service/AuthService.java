@@ -34,6 +34,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import javax.swing.*;
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -107,25 +108,32 @@ public class AuthService {
 
 //     Refresh token
     public AuthenticationResponse refreshToken(RefreshRequest request)
-                                    throws ParseException, JOSEException {
+                                throws ParseException, JOSEException {
+
         var signedJWT = JWTParser.parse(request.getToken());
 
         var jit = signedJWT.getJWTClaimsSet().getJWTID();
-        var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        var expiryDate = signedJWT.getJWTClaimsSet().getExpirationTime();
+        var expiryTime = expiryDate.toInstant();
 
-        InvalidatedToken invalidatedToken = InvalidatedToken.builder().id(jit)
-                .expiryTime(expiryTime).build();
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
 
         invalidatedTokenRepository.save(invalidatedToken);
 
         var username = signedJWT.getJWTClaimsSet().getSubject();
 
-        var user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
         var token = generateToken(user);
 
-        return AuthenticationResponse.builder().token(token)
-                .authenticated(true).build();
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
     }
 
 
@@ -179,14 +187,16 @@ public class AuthService {
         var signToken = verifyToken(request.getToken());
 
         String jit = signToken.getJWTClaimsSet().getJWTID();
-        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+        Instant expiryTime = signToken.getJWTClaimsSet().getExpirationTime().toInstant();
 
         InvalidatedToken invalidatedToken = InvalidatedToken.builder()
                 .id(jit)
                 .expiryTime(expiryTime)
                 .build();
+
         invalidatedTokenRepository.save(invalidatedToken);
     }
+
 
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);

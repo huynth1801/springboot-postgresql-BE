@@ -32,6 +32,9 @@ public class User {
     @Size(max = 120)
     String password;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    PasswordResetToken passwordResetToken;
+
     @ManyToMany(fetch = FetchType.LAZY)
     Set<Role> roles;
 }

@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import started.local.startedjava.dto.request.ApiResponse;
 import started.local.startedjava.dto.request.EmailRequest;
 import started.local.startedjava.dto.request.ResetPasswordRequest;
+import started.local.startedjava.dto.response.ResetPasswordSuccessResponse;
 import started.local.startedjava.service.authentication.ResetPasswordService;
 
 import java.util.Map;
@@ -25,8 +27,8 @@ import java.util.Map;
 
 
     @PostMapping("/password-reset/confirm")
-    public ResponseEntity<?> confirmPasswordReset(@RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<ResetPasswordSuccessResponse> confirmPasswordReset(@RequestBody ResetPasswordRequest request) {
         resetPasswordService.resetPassword(request.getToken(), request.getNewPassword());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new ResetPasswordSuccessResponse("Đặt lại mật khẩu thành công. Bạn có thể đăng nhập ngay bây giờ."));
     }
 }

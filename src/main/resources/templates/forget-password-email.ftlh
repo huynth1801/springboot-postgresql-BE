@@ -23,7 +23,7 @@
             margin-top: 20px;
             padding: 12px 24px;
             font-size: 16px;
-            color: white;
+            color: white !important;
             background-color: #007BFF;
             text-decoration: none;
             border-radius: 6px;

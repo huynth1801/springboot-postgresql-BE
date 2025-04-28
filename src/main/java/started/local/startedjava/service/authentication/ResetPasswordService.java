@@ -1,5 +1,6 @@
 package started.local.startedjava.service.authentication;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class ResetPasswordService {
 
         passwordResetTokenRepository.save(resetToken);
 
-        String link = "http://localhost:8080/reset-password?token=" + token;
+        String link = "http://localhost:3000/reset-password?token=" + token;
 
         Map<String, Object> model = Map.of(
                 "username", user.getUsername(),
@@ -58,6 +59,7 @@ public class ResetPasswordService {
         return link;
     }
 
+    @Transactional
     public void resetPassword(String token, String newPassword) {
         var resetToken = passwordResetTokenRepository.findByToken(token)
                 .orElseThrow(() -> new AppException(ErrorCode.OTP_INVALID));

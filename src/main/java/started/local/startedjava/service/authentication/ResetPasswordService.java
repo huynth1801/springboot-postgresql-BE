@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import started.local.startedjava.constant.AppConstant;
 import started.local.startedjava.entity.PasswordResetToken;
 import started.local.startedjava.entity.User;
 import started.local.startedjava.exception.AppException;
@@ -49,7 +50,7 @@ public class ResetPasswordService {
 
         passwordResetTokenRepository.save(resetToken);
 
-        String link = "http://localhost:3000/reset-password?token=" + token;
+        String link = AppConstant.FRONTEND_HOST + "/reset-password?token=" + token;
 
         Map<String, Object> model = Map.of(
                 "username", user.getUsername(),

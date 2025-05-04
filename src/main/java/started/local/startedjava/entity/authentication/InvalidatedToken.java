@@ -1,12 +1,10 @@
-package started.local.startedjava.entity;
+package started.local.startedjava.entity.authentication;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
-import java.util.Date;
 
 @Getter
 @Setter

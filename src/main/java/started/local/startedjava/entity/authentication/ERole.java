@@ -1,4 +1,4 @@
-package started.local.startedjava.entity;
+package started.local.startedjava.entity.authentication;
 
 public enum ERole implements CharSequence {
     USER,

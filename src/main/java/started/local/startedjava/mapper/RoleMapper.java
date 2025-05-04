@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import started.local.startedjava.dto.request.RoleRequest;
 import started.local.startedjava.dto.response.RoleResponse;
-import started.local.startedjava.entity.Role;
+import started.local.startedjava.entity.authentication.Role;
 
 @Mapper(componentModel = "spring")
 public interface RoleMapper {

@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import started.local.startedjava.constant.AppConstant;
-import started.local.startedjava.entity.PasswordResetToken;
-import started.local.startedjava.entity.User;
+import started.local.startedjava.entity.authentication.PasswordResetToken;
+import started.local.startedjava.entity.authentication.User;
 import started.local.startedjava.exception.AppException;
 import started.local.startedjava.exception.ErrorCode;
 import started.local.startedjava.repository.PasswordResetTokenRepository;
-import started.local.startedjava.repository.UserRepository;
+import started.local.startedjava.repository.authentication.UserRepository;
 import started.local.startedjava.service.mail.EmailSenderService;
 
 import java.time.Instant;

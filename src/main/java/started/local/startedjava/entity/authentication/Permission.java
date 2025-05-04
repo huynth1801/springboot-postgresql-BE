@@ -1,34 +1,28 @@
-package started.local.startedjava.entity;
+package started.local.startedjava.entity.authentication;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.UuidGenerator;
-
-import java.util.Set;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "roles")
-@Slf4j
-public class Role {
+@Table(name = "permissions")
+public class Permission {
+
     @Id
     @GeneratedValue
     @UuidGenerator
     String id;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    ERole name;
+    String name;
 
     @Column(length = 500)
     String description;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    Set<Permission> permissions;
 }

@@ -6,7 +6,7 @@ import org.mapstruct.MappingTarget;
 import started.local.startedjava.dto.request.UserCreationRequest;
 import started.local.startedjava.dto.request.UserUpdateRequest;
 import started.local.startedjava.dto.response.UserResponse;
-import started.local.startedjava.entity.User;
+import started.local.startedjava.entity.authentication.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

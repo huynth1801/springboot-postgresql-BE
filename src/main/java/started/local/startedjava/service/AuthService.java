@@ -19,22 +19,20 @@ import started.local.startedjava.dto.request.*;
 import started.local.startedjava.dto.response.AuthenticationResponse;
 import started.local.startedjava.dto.response.IntrospectResponse;
 import started.local.startedjava.dto.response.UserResponse;
-import started.local.startedjava.entity.ERole;
-import started.local.startedjava.entity.InvalidatedToken;
-import started.local.startedjava.entity.Role;
-import started.local.startedjava.entity.User;
+import started.local.startedjava.entity.authentication.ERole;
+import started.local.startedjava.entity.authentication.InvalidatedToken;
+import started.local.startedjava.entity.authentication.Role;
+import started.local.startedjava.entity.authentication.User;
 import started.local.startedjava.exception.AppException;
 import started.local.startedjava.exception.ErrorCode;
 import started.local.startedjava.mapper.UserMapper;
 import started.local.startedjava.repository.InvalidatedTokenRepository;
 import started.local.startedjava.repository.RoleRepository;
-import started.local.startedjava.repository.UserRepository;
+import started.local.startedjava.repository.authentication.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import javax.swing.*;
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 

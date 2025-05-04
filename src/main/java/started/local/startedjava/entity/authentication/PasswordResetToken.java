@@ -1,10 +1,11 @@
-package started.local.startedjava.entity;
+package started.local.startedjava.entity.authentication;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import started.local.startedjava.entity.BaseEntity;
 
 import java.time.Instant;
 
@@ -14,12 +15,8 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PasswordResetToken {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
-    @OneToOne
+public class PasswordResetToken extends BaseEntity {
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 

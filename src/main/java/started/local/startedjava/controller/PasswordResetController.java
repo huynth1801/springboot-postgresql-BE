@@ -6,11 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import started.local.startedjava.dto.request.ApiResponse;
 import started.local.startedjava.dto.request.EmailRequest;
 import started.local.startedjava.dto.request.ResetPasswordRequest;
 import started.local.startedjava.dto.response.ResetPasswordSuccessResponse;
-import started.local.startedjava.service.authentication.ResetPasswordService;
 
 import java.util.Map;
 

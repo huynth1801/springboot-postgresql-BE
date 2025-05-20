@@ -1,7 +1,6 @@
 package started.local.startedjava.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import started.local.startedjava.entity.authentication.ERole;
 import started.local.startedjava.entity.authentication.Role;
 
 import java.util.Optional;

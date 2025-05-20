@@ -19,8 +19,6 @@ import started.local.startedjava.dto.request.*;
 import started.local.startedjava.dto.response.AuthenticationResponse;
 import started.local.startedjava.dto.response.IntrospectResponse;
 import started.local.startedjava.dto.response.UserResponse;
-import started.local.startedjava.entity.authentication.ERole;
-import started.local.startedjava.entity.authentication.InvalidatedToken;
 import started.local.startedjava.entity.authentication.Role;
 import started.local.startedjava.entity.authentication.User;
 import started.local.startedjava.exception.AppException;

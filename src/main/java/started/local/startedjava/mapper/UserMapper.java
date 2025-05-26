@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import started.local.startedjava.dto.request.UserCreationRequest;
 import started.local.startedjava.dto.request.UserUpdateRequest;
-import started.local.startedjava.dto.response.UserResponse;
+import started.local.startedjava.dto.response.authentication.UserResponse;
 import started.local.startedjava.entity.authentication.User;
 
 @Mapper(componentModel = "spring")

@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import started.local.startedjava.dto.request.ApiResponse;
 import started.local.startedjava.dto.request.UserUpdateRequest;
-import started.local.startedjava.dto.response.UserResponse;
+import started.local.startedjava.dto.response.authentication.UserResponse;
 import started.local.startedjava.service.AuthService;
 
 @RestController

@@ -2,6 +2,8 @@ package started.local.startedjava.entity.authentication;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import started.local.startedjava.entity.BaseEntity;
@@ -12,6 +14,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Data
 @Table(name = "verification")
 public class Verification extends BaseEntity {
     @OneToOne

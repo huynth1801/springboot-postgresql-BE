@@ -3,11 +3,10 @@ package started.local.startedjava.controller;
 import com.nimbusds.jose.JOSEException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import started.local.startedjava.dto.request.*;
 import started.local.startedjava.dto.response.AuthenticationResponse;
-import started.local.startedjava.dto.response.UserResponse;
+import started.local.startedjava.dto.response.authentication.UserResponse;
 import started.local.startedjava.service.AuthService;
 
 import java.text.ParseException;

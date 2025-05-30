@@ -7,6 +7,7 @@ import started.local.startedjava.dto.response.address.AddressResponse;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +15,7 @@ import java.util.Set;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
-    String id;
+    Long id;
     Instant createdAt;
     Instant updatedAt;
     String username;

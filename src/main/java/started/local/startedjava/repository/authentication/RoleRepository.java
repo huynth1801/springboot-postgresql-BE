@@ -3,10 +3,13 @@ package started.local.startedjava.repository.authentication;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
-import started.local.startedjava.entity.authentication.Verification;
+import started.local.startedjava.entity.authentication.Role;
 
 import java.util.Optional;
 
-public interface VerificationRepository extends JpaRepository<Verification, Long>, JpaSpecificationExecutor<Verification> {
-    Optional<Verification> findByUserId(Long userId);
+
+public interface RoleRepository extends JpaRepository<Role, Long>, JpaSpecificationExecutor<Role> {
+    boolean existsByCode(String code);
+    Optional<Role> findByCode(String code);
 }
+

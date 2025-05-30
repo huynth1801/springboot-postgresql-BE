@@ -23,7 +23,7 @@ import java.util.Set;
 @Setter
 @Accessors(chain = true)
 @Entity
-@Table(name = "order")
+@Table(name =  "orders")
 public class Order extends BaseEntity {
     @Column(name = "code", nullable = false, unique = true)
     private String code;

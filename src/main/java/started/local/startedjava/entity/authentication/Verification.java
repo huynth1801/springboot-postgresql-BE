@@ -17,7 +17,7 @@ import java.time.Instant;
 @Data
 @Table(name = "verification")
 public class Verification extends BaseEntity {
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
     private User user;
 

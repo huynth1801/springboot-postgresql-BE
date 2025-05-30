@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import started.local.startedjava.entity.BaseEntity;
+import started.local.startedjava.entity.order.OrderResource;
 
 import java.util.ArrayList;
 import java.util.List;

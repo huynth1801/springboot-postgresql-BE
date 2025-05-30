@@ -1,19 +1,26 @@
 package started.local.startedjava.entity.authentication;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import started.local.startedjava.entity.BaseEntity;
 import started.local.startedjava.entity.address.Address;
+import started.local.startedjava.entity.order.Order;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-@Entity
-@Table(name = "user")
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
+@Accessors(chain = true)
+@Entity
+@Table(name="users")
 public class User extends BaseEntity {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
@@ -43,8 +50,9 @@ public class User extends BaseEntity {
     @Column(name = "status", nullable = false, columnDefinition = "TINYINT")
     private Integer status;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    PasswordResetToken passwordResetToken;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Order> orders = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
@@ -53,4 +61,10 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id", nullable = false)
     )
     private Set<Role> roles = new HashSet<>();
+
+    @OneToOne(mappedBy = "user")
+    private Verification verification;
+
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
 }

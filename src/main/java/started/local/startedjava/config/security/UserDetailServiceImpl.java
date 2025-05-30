@@ -12,7 +12,12 @@ import started.local.startedjava.repository.authentication.UserRepository;
 @Service
 @AllArgsConstructor
 public class UserDetailServiceImpl implements UserDetailsService {
+
     private UserRepository userRepository;
+
+    public UserDetailServiceImpl() {
+        System.out.println("✅ UserDetailServiceImpl loaded");
+    }
 
     @Override
     @Transactional

@@ -1,12 +1,9 @@
 package started.local.startedjava.entity.order;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
-import started.local.startedjava.entity.BaseEntity;
+import started.local.startedjava.entity.product.Variant;
 
 import java.math.BigDecimal;
 
@@ -17,7 +14,7 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @Entity
 @Table(name = "order_variant")
-public class OrderVariant extends BaseEntity {
+public class OrderVariant {
     @EmbeddedId
     private OrderVariantKey orderVariantKey = new OrderVariantKey();
 

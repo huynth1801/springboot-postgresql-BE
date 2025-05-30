@@ -11,7 +11,9 @@ public interface SecurityConstants {
     };
 
     String[] IGNORING_API_PATHS = {
+            "/api/auth/**",
             "/api/orders/**",
+            "/error/**",
     };
 
     interface Role {

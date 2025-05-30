@@ -1,5 +1,6 @@
 package started.local.startedjava.controller.authentication;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +37,9 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(new RegistrationResponse(userId));
     }
 
-//    @PostMapping("/registration/confirm")
-//    public ResponseEntity<ObjectNode> confirm(@RequestBody RegistrationRequest request) {
-//        return ;
-//    }
+    @PostMapping("/registration/confirm")
+    public ResponseEntity<ObjectNode> confirm(@RequestBody RegistrationRequest registration) {
+        verificationService.confirmVerification(registration);
+        return ResponseEntity.status(HttpStatus.OK).body(new ObjectNode(JsonNodeFactory.instance));
+    }
 }

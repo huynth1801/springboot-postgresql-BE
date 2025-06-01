@@ -39,6 +39,8 @@ public class AuthController {
 
     @PostMapping("/registration/confirm")
     public ResponseEntity<ObjectNode> confirm(@RequestBody RegistrationRequest registration) {
+        System.out.println("userId = " + registration.getUserId());
+        System.out.println("token = " + registration.getToken());
         verificationService.confirmVerification(registration);
         return ResponseEntity.status(HttpStatus.OK).body(new ObjectNode(JsonNodeFactory.instance));
     }

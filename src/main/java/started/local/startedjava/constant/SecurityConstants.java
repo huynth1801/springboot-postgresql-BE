@@ -14,6 +14,7 @@ public interface SecurityConstants {
             "/api/auth/**",
             "/api/orders/**",
             "/error/**",
+            "/log-in"
     };
 
     interface Role {

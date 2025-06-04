@@ -2,6 +2,7 @@ package started.local.startedjava.config.security;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,13 +11,14 @@ import started.local.startedjava.entity.authentication.User;
 import started.local.startedjava.repository.authentication.UserRepository;
 
 @Service
-@AllArgsConstructor
+//@AllArgsConstructor
 public class UserDetailServiceImpl implements UserDetailsService {
 
     private UserRepository userRepository;
 
-    public UserDetailServiceImpl() {
-        System.out.println("✅ UserDetailServiceImpl loaded");
+    @Autowired
+    public UserDetailServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import started.local.startedjava.constant.AppConstant;
 import started.local.startedjava.dto.request.authentication.RegistrationRequest;
 import started.local.startedjava.dto.request.authentication.UserRequest;
@@ -24,6 +25,7 @@ import started.local.startedjava.repository.authentication.UserRepository;
 import started.local.startedjava.repository.authentication.VerificationRepository;
 import started.local.startedjava.repository.customer.CustomerRepository;
 import started.local.startedjava.service.mail.EmailSenderService;
+import started.local.startedjava.utils.StringUtils;
 
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -59,6 +61,8 @@ public class VerificationService {
 
         // Create user entity with status 2 (non-verified) and set role Customer
         User user = userMapper.toUser(userRequest);
+        // Encode pasword
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setStatus(2); // Non-verified
         Role role = roleRepository.findById(3L)
                 .orElseThrow(() -> new IllegalArgumentException("Role not found"));
@@ -92,15 +96,15 @@ public class VerificationService {
 
     public void confirmVerification(RegistrationRequest registrationRequest) {
         Optional<Verification> verifyOpt = verificationRepository.findByUserId(registrationRequest.getUserId());
-        if(verifyOpt.isPresent()) {
+        if (verifyOpt.isPresent()) {
             Verification verification = verifyOpt.get();
 
-            boolean validVerification = verification.getToken().equals(registrationRequest.getToken())
-                    && verification.getExpiredAt().isBefore(Instant.now())
-                    && verification.getType().equals(VerificationType.REGISTRATION);
+            boolean isTokenMatch = verification.getToken().equals(registrationRequest.getToken());
+            boolean isTokenValid = verification.getExpiredAt().isAfter(Instant.now());
+            boolean isRegistrationType = verification.getType().equals(VerificationType.REGISTRATION);
 
-            if(validVerification) {
-                // Set status verified
+            if (isTokenMatch && isTokenValid && isRegistrationType) {
+                // Token hợp lệ
                 User user = verification.getUser();
                 user.setStatus(1);
                 userRepository.save(user);
@@ -112,13 +116,11 @@ public class VerificationService {
                 customer.setCustomerStatus((CustomerStatus) new CustomerStatus().setId(1L));
                 customer.setCustomerResource((CustomerResource) new CustomerResource().setId(1L));
                 customerRepository.save(customer);
+                return;
             }
 
-            boolean isTokenExpired = verification.getToken().equals(registrationRequest.getToken())
-                    && verification.getExpiredAt().isAfter(Instant.now())
-                    && verification.getType().equals(VerificationType.REGISTRATION);
-
-            if(isTokenExpired) {
+            if (isTokenMatch && !isTokenValid && isRegistrationType) {
+                // Token hết hạn –> tạo lại token mới
                 String token = generateVerificationToken();
                 verification.setToken(token);
                 verification.setExpiredAt(Instant.now().plus(5, ChronoUnit.MINUTES));
@@ -133,11 +135,46 @@ public class VerificationService {
                 throw new VerificationException("Token is expired");
             }
 
-            if (!verification.getToken().equals(registrationRequest.getToken())) {
-                throw new VerificationException("Invalid token");
-            }
+            throw new VerificationException("Invalid token");
         } else {
             throw new VerificationException("User does not exist");
+        }
+    }
+
+    // Resend new token
+    public void resendVerificationToken(Long userId) {
+        Optional<Verification> verifyOpt = verificationRepository.findByUserId(userId);
+
+        if(verifyOpt.isPresent()) {
+            Verification verification = verifyOpt.get();
+            String token = generateVerificationToken();
+
+            verification.setToken(token);
+            verification.setExpiredAt(Instant.now().plus(5, ChronoUnit.MINUTES));
+
+            verificationRepository.save(verification);
+
+            Map<String, Object> attributes = Map.of(
+                    "token", token,
+                    "link", MessageFormat.format("{0}/signup?userId={1}", AppConstant.FRONTEND_HOST, userId));
+            emailSenderService.sendVerificationToken(verification.getUser().getEmail(), attributes);
+        } else {
+            throw new VerificationException("User does not exist. Please try again");
+        }
+    }
+
+    public void forgetPassword(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Email does not exist"));
+
+        if(user.getStatus() == 1) {
+            String token = StringUtils.randomAlphanumericString(10);
+            user.setResetPasswordToken(token);
+            userRepository.save(user);
+
+            String link = MessageFormat.format("{0}/change-password?token={1}&email={2}", AppConstant.FRONTEND_HOST, token, email);
+            emailSenderService.sendForgetPasswordToken(user.getEmail(), Map.of("link", link));
+        } else {
+            throw new VerificationException("Account is not activated");
         }
     }
 

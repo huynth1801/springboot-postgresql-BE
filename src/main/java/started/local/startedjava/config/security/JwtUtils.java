@@ -19,9 +19,9 @@ public class JwtUtils {
     private int jwtExpiration;
 
     public String generateJwtToken(Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(userPrincipal.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + this.jwtExpiration))
                 .signWith(SignatureAlgorithm.HS512, this.jwtSecret)
@@ -32,33 +32,31 @@ public class JwtUtils {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration((new Date(new Date().getTime() + this.jwtExpiration)))
+                .setExpiration(new Date(new Date().getTime() + this.jwtExpiration))
                 .signWith(SignatureAlgorithm.HS512, this.jwtSecret)
                 .compact();
     }
 
     public String getUsernameFromJwt(String token) {
-        Claims claims = Jwts
-                .parserBuilder()
-                .setSigningKey(this.jwtSecret)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.getSubject();
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts
-                    .parserBuilder()
-                    .setSigningKey(this.jwtSecret)
-                    .build()
-                    .parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            log.error("Invalid JWT token: {}", e.getMessage());
+        } catch (SignatureException e) {
+            log.error("Invalid JWT signature {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.error("Invalid JWT token {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.error("Invalid JWT expired {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.error("Invalid JWT unsupported {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid JWT empty {}", e.getMessage());
         }
+
         return false;
     }
 }

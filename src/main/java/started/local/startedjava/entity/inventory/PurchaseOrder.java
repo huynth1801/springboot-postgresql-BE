@@ -1,4 +1,4 @@
-package started.local.startedjava.entity;
+package started.local.startedjava.entity.inventory;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -8,10 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import started.local.startedjava.entity.BaseEntity;
 import started.local.startedjava.entity.product.Supplier;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,12 +22,13 @@ import java.util.HashSet;
 @Accessors(chain = true)
 @Entity
 @Table(name = "purchase_order")
-public class inventory extends BaseEntity {
+public class PurchaseOrder extends BaseEntity {
     @Column(name = "code", nullable = false, unique = true)
     private String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id", nullable = false)
+    @JsonBackReference
     private Supplier supplier;
 
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
@@ -45,7 +48,4 @@ public class inventory extends BaseEntity {
     @Column(name = "status", nullable = false, columnDefinition = "TINYINT")
     private Integer status;
 
-    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Docket> dockets = new ArrayList<>();
 }
